@@ -1,0 +1,25 @@
+{
+  "name": "gotham-311-server",
+  "version": "1.0.0",
+  "description": "Server and database connection for Gotham-311 application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HRNYC32-BlueOcean/Gotham-311-Server.git"
+  },
+  "author": "HRNYC32",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HRNYC32-BlueOcean/Gotham-311-Server/issues"
+  },
+  "homepage": "https://github.com/HRNYC32-BlueOcean/Gotham-311-Server#readme",
+  "dependencies": {
+    "apollo-server": "^2.18.2",
+    "apollo-server-express": "^2.18.2",
+    "graphql": "^15.4.0"
+  }
+}
