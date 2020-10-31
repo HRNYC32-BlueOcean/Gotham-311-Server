@@ -13,11 +13,6 @@ const DB = new Sequelize(DB_NAME, DB_USERNAME, DB_PASSWORD, {
     freezeTableName: true,
     timestamps: false
   },
-  pool: {
-    max: 5,
-    min: 0,
-    idle: 10000
-  },
 });
 
 DB.authenticate()
