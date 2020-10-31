@@ -20,7 +20,7 @@ module.exports.typeDefs = gql`
     upvotes_count: Float
     resolution_status: Float
     confirm_resolved_count: Float
-    date_issued: String
+    createdAt: String
     date_marked_in_progress: String
     date_marked_resolved: String
   }
