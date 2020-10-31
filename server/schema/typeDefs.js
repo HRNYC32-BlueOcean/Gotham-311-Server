@@ -5,6 +5,7 @@ module.exports.typeDefs = gql`
     id: ID
     name: String
     email: String
+    phone: String
   }
 
   type Issues {
@@ -14,6 +15,8 @@ module.exports.typeDefs = gql`
     task_owner: String
     username: String
     user_id: Float
+    lat: Float
+    lng: Float
     upvotes_count: Float
     resolution_status: Float
     confirm_resolved_count: Float

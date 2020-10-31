@@ -1,10 +1,10 @@
-const { ApolloServer, gql } = require('apollo-server-express');
+const { ApolloServer } = require('apollo-server-express');
 const express = require('express');
-require('dotenv').config()
+require('dotenv').config();
 const { typeDefs } = require('./schema/typeDefs.js');
 const { resolvers } = require('./schema/resolvers.js');
 const db = require('../db');
-const PORT = process.env.PORT
+const { PORT } = process.env;
 
 const app = express();
 
