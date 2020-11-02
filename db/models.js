@@ -8,6 +8,8 @@ const User = db.define(
     name: { type: DataTypes.STRING, allowNull: false },
     email: { type: DataTypes.STRING, allowNull: false },
     phone: { type: DataTypes.STRING, allowNull: false },
+    createdAt: { type: DataTypes.DATE, allowNull: false },
+    updatedAt: { type: DataTypes.DATE, allowNull: false },
   },
   {
     tableName: 'users',
@@ -22,6 +24,7 @@ const Issue = db.define(
   'Issue',
   {
     id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
+    type: { type: DataTypes.STRING, allowNull: false },
     description: { type: DataTypes.STRING, allowNull: false },
     reported_count: { type: DataTypes.INTEGER, allowNull: false },
     task_owner: { type: DataTypes.STRING, allowNull: false },
@@ -31,9 +34,10 @@ const Issue = db.define(
     upvotes_count: { type: DataTypes.INTEGER, allowNull: false },
     resolution_status: { type: DataTypes.INTEGER, allowNull: false },
     confirm_resolved_count: { type: DataTypes.INTEGER, allowNull: false },
-    createdAt: { type: DataTypes.DATE, allowNull: false },
     date_marked_in_progress: { type: DataTypes.DATE, allowNull: false },
     date_marked_resolved: { type: DataTypes.DATE, allowNull: false },
+    createdAt: { type: DataTypes.DATE, allowNull: false },
+    updatedAt: { type: DataTypes.DATE, allowNull: false },
   },
   {
     tableName: 'issues',

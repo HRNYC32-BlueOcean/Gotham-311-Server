@@ -8,7 +8,6 @@ const db = new Sequelize(DB_NAME, DB_USERNAME, DB_PASSWORD, {
   dialect: 'postgres',
   define: {
     freezeTableName: true,
-    timestamps: false,
   },
 });
 
