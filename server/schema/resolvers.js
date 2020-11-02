@@ -1,5 +1,12 @@
+const { User, Issue } = require('../../db/models.js');
+
 module.exports.resolvers = {
-    Query: {
-        getAll: () => {return 0}
-    }
-}
+  Query: {
+    getUsers: () => {
+      return User.findAll({ raw: true });
+    },
+    getUser: (parent, args, context) => {
+      return User.findAll({ where: args, raw: true });
+    },
+  },
+};
