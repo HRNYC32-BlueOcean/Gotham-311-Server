@@ -7,7 +7,7 @@ const db = require('../db');
 
 const { PORT } = process.env;
 
-const app = express();
+// const app = express();
 
 const server = new ApolloServer({
   typeDefs,
@@ -28,8 +28,12 @@ const server = new ApolloServer({
   // },
 });
 
-server.applyMiddleware({ app });
+// server.applyMiddleware({ app });
 
-app.listen({ port: PORT }, () =>
-  console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`)
-);
+// app.listen({ port: PORT }, () =>
+//   console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`)
+// );
+
+server.listen({ port: PORT || 4000 }).then(({ url }) => {
+  console.log(`🚀 Server ready at ${url}`);
+});
