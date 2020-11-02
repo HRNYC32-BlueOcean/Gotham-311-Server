@@ -2,6 +2,20 @@
 
 CREATE SCHEMA "g-311-db" AUTHORIZATION postgres;
 
+-- DROP TYPE "g-311-db"."_issues";
+
+CREATE TYPE "g-311-db"."_issues" (
+	INPUT = array_in,
+	OUTPUT = array_out,
+	RECEIVE = array_recv,
+	SEND = array_send,
+	ANALYZE = array_typanalyze,
+	ALIGNMENT = 8,
+	STORAGE = any,
+	CATEGORY = A,
+	ELEMENT = "g-311-db".issues,
+	DELIMITER = ',');
+
 -- DROP TYPE "g-311-db"."_users";
 
 CREATE TYPE "g-311-db"."_users" (
@@ -16,21 +30,48 @@ CREATE TYPE "g-311-db"."_users" (
 	ELEMENT = "g-311-db".users,
 	DELIMITER = ',');
 
+-- DROP TYPE "g-311-db".issues;
+
+CREATE TYPE "g-311-db".issues AS (
+	id int4,
+	description varchar,
+	title varchar,
+	task_owner varchar,
+	user_id int4,
+	lat float4,
+	lng float4,
+	reported_count int4,
+	upvotes_count int4,
+	confirm_resolved_count int4,
+	resolution_status int4,
+	date_marked_in_progress date,
+	date_marked_resolved date,
+	"type" varchar);
+
 -- DROP TYPE "g-311-db".users;
 
 CREATE TYPE "g-311-db".users AS (
-	id serial,
+	id int4,
 	"name" varchar,
 	email varchar,
 	phone varchar);
--- "g-311-db".users definition
+
+-- DROP SEQUENCE "g-311-db".users_id_seq;
+
+CREATE SEQUENCE "g-311-db".users_id_seq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 2147483647
+	START 1
+	CACHE 1
+	NO CYCLE;-- "g-311-db".users definition
 
 -- Drop table
 
 -- DROP TABLE "g-311-db".users;
 
 CREATE TABLE "g-311-db".users (
-	id serial NOT NULL DEFAULT nextval('"g-311-db".users_id_seq'::regclass),
+	id int4 NOT NULL,
 	"name" varchar NOT NULL,
 	email varchar NOT NULL,
 	phone varchar NOT NULL,
