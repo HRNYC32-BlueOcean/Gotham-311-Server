@@ -6,6 +6,8 @@ module.exports.typeDefs = gql`
     name: String
     email: String
     phone: String
+    createdAt: String
+    updatedAt: String
   }
 
   type Issue {
@@ -23,13 +25,15 @@ module.exports.typeDefs = gql`
     createdAt: String
     date_marked_in_progress: String
     date_marked_resolved: String
+    createdAt: String
+    updatedAt: String
   }
 
   type Query {
     getUsers: [User]
     getUser(id: ID!): [User]
     getIssues: [Issue]
-    getIssue(id: ID): [Issue]
+    getIssue(id: ID!): [Issue]
   }
 
   type Mutation {
