@@ -5,6 +5,7 @@ const { typeDefs } = require('./schema/typeDefs.js');
 const { resolvers } = require('./schema/resolvers.js');
 const db = require('../db');
 
+process.env.NODE_ENV = 'production';
 const { PORT } = process.env;
 
 const app = express();
