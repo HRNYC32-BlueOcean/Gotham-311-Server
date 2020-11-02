@@ -25,6 +25,7 @@ const Issue = db.define(
   {
     id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
     type: { type: DataTypes.STRING, allowNull: false },
+    title: { type: DataTypes.STRING, allowNull: false },
     description: { type: DataTypes.STRING, allowNull: false },
     reported_count: { type: DataTypes.INTEGER, allowNull: false },
     task_owner: { type: DataTypes.STRING, allowNull: false },

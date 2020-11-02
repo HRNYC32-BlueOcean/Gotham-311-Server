@@ -2,7 +2,7 @@ const { gql } = require('apollo-server-express');
 
 module.exports.typeDefs = gql`
   type User {
-    id: ID!
+    id: ID
     name: String
     email: String
     phone: String
@@ -13,6 +13,7 @@ module.exports.typeDefs = gql`
   type Issue {
     id: ID!
     type: String
+    title: String
     description: String
     reported_count: Float
     task_owner: String
@@ -22,7 +23,6 @@ module.exports.typeDefs = gql`
     upvotes_count: Float
     resolution_status: Float
     confirm_resolved_count: Float
-    createdAt: String
     date_marked_in_progress: String
     date_marked_resolved: String
     createdAt: String
@@ -37,7 +37,7 @@ module.exports.typeDefs = gql`
   }
 
   type Mutation {
-    createUser(name: String, email: String, phone: String): [User]
-    updateUser(name: String, email: String, phone: String): [User]
+    createUser(name: String!, email: String!, phone: String!): User
+    updateUser(id: ID!, name: String, email: String, phone: String): User
   }
 `;
