@@ -12,6 +12,7 @@ const { PORT } = process.env;
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  playground: true,
   // context: ({ req }) => {
   //   // get the user token from the headers
   //   const token = req.headers.authorization || '';
