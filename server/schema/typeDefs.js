@@ -61,6 +61,35 @@ module.exports.typeDefs = gql`
     staten_island: [Issue]
   }
 
+  type Count {
+    open: Float
+    in_progress: Float
+    resolved: Float
+  }
+
+  type IssuesCountbyBorough {
+    manhattan: Count
+    brooklyn: Count
+    queens: Count
+    bronx: Count
+    staten_island: Count
+  }
+
+  type IssuesCountbyMonth {
+    January: Count
+    February: Count
+    March: Count
+    April: Count
+    May: Count
+    June: Count
+    July: Count
+    August: Count
+    September: Count
+    October: Count
+    November: Count
+    December: Count
+  }
+
   type Query {
     getUsers: [User]
     getUser(id: ID!): [User]
@@ -74,7 +103,9 @@ module.exports.typeDefs = gql`
     getResolution_Status(id: ID!): [Resolution_Status]
     getBoroughs: [Type]
     getBorough(id: ID!): [Type]
-    topIssues(count: Float): [TopIssues]
+    topIssues(count: Float): TopIssues
+    issuesByBorough: IssuesCountbyBorough
+    issuesByMonth: IssuesCountbyMonth
   }
 
   type Mutation {

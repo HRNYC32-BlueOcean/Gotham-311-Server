@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const {
   User,
   Issue,
@@ -45,6 +46,12 @@ module.exports.resolvers = {
     getBorough: (parent, args, context) => {
       return Borough.findAll({ where: args, raw: true });
     },
+    topIssues: (parent, args, context) => {
+      return args;
+    },
+    issuesByBorough: (parent, args, context) => {
+      return args;
+    },
   },
 
   User: {
@@ -78,7 +85,10 @@ module.exports.resolvers = {
   TopIssues: {
     manhattan: (root) => {
       return Issue.findAll({
-        where: { borough_id: 1 },
+        where: {
+          borough_id: 1,
+          [Op.or]: [{ resolution_status_id: 1 }, { resolution_status_id: 2 }],
+        },
         order: [['upvotes_count', 'DESC']],
         limit: root.count,
         raw: true,
@@ -86,31 +96,85 @@ module.exports.resolvers = {
     },
     brooklyn: (root) => {
       return Issue.findAll({
-        where: { borough_id: 2 },
+        where: {
+          borough_id: 2,
+          [Op.or]: [{ resolution_status_id: 1 }, { resolution_status_id: 2 }],
+        },
         order: [['upvotes_count', 'DESC']],
         limit: root.count,
       });
     },
     queens: (root) => {
       return Issue.findAll({
-        where: { borough_id: 3 },
+        where: {
+          borough_id: 3,
+          [Op.or]: [{ resolution_status_id: 1 }, { resolution_status_id: 2 }],
+        },
         order: [['upvotes_count', 'DESC']],
         limit: root.count,
       });
     },
     bronx: (root) => {
       return Issue.findAll({
-        where: { borough_id: 5 },
+        where: {
+          borough_id: 4,
+          [Op.or]: [{ resolution_status_id: 1 }, { resolution_status_id: 2 }],
+        },
         order: [['upvotes_count', 'DESC']],
         limit: root.count,
       });
     },
     staten_island: (root) => {
       return Issue.findAll({
-        where: { borough_id: 5 },
+        where: {
+          borough_id: 5,
+          [Op.or]: [{ resolution_status_id: 1 }, { resolution_status_id: 2 }],
+        },
         order: [['upvotes_count', 'DESC']],
         limit: root.count,
       });
+    },
+  },
+
+  Count: {
+    open: (root) => {
+      let [[key, value]] = Object.entries(root);
+      return Issue.count({
+        where: { resolution_status_id: 1, [key]: value },
+        raw: true,
+      });
+    },
+    in_progress: (root) => {
+      let [[key, value]] = Object.entries(root);
+      return Issue.count({
+        where: { resolution_status_id: 2, [key]: value },
+        raw: true,
+      });
+    },
+    resolved: (root) => {
+      let [[key, value]] = Object.entries(root);
+      return Issue.count({
+        where: { resolution_status_id: 3, [key]: value },
+        raw: true,
+      });
+    },
+  },
+
+  IssuesCountbyBorough: {
+    manhattan: () => {
+      return { borough_id: 1 };
+    },
+    brooklyn: () => {
+      return { borough_id: 2 };
+    },
+    queens: () => {
+      return { borough_id: 3 };
+    },
+    bronx: () => {
+      return { borough_id: 4 };
+    },
+    staten_island: () => {
+      return { borough_id: 5 };
     },
   },
 
