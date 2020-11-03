@@ -5,49 +5,156 @@ const User = db.define(
   'User',
   {
     id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
-    name: { type: DataTypes.STRING, allowNull: false },
+    first_name: { type: DataTypes.STRING, allowNull: false },
+    last_name: { type: DataTypes.STRING, allowNull: false },
     email: { type: DataTypes.STRING, allowNull: false },
     phone: { type: DataTypes.STRING, allowNull: false },
-    createdAt: { type: DataTypes.DATE, allowNull: false },
-    updatedAt: { type: DataTypes.DATE, allowNull: false },
+    points: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
+    reported_count: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
+    banned: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
+    },
   },
   {
     tableName: 'users',
   }
 );
 
-User.sync()
-  .then(() => console.log('User table synchronized'))
-  .catch((error) => console.log('Something went wrong', error));
+const Type = db.define(
+  'Type',
+  {
+    id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
+    name: { type: DataTypes.STRING, allowNull: false },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
+    },
+  },
+  { tableName: 'types' }
+);
+
+const Borough = db.define(
+  'Borough',
+  {
+    id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
+    name: { type: DataTypes.STRING, allowNull: false },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
+    },
+  },
+  { tableName: 'borough' }
+);
+
+const Resolution_Status = db.define(
+  'Resolution_Status',
+  {
+    id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
+    status: { type: DataTypes.STRING, allowNull: false },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
+    },
+  },
+  { tableName: 'resolution_status' }
+);
 
 const Issue = db.define(
   'Issue',
   {
     id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
-    type: { type: DataTypes.STRING, allowNull: false },
     title: { type: DataTypes.STRING, allowNull: false },
     description: { type: DataTypes.STRING, allowNull: false },
     reported_count: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
-    task_owner: { type: DataTypes.STRING, allowNull: false },
-    user_id: { type: DataTypes.INTEGER, allowNull: false },
-    lat: { type: DataTypes.FLOAT, allowNull: false },
-    lng: { type: DataTypes.FLOAT, allowNull: false },
     upvotes_count: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
-    resolution_status: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
     confirm_resolved_count: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
-    date_marked_in_progress: { type: DataTypes.DATE, allowNull: false },
-    date_marked_resolved: { type: DataTypes.DATE, allowNull: false },
-    createdAt: { type: DataTypes.DATE, allowNull: false },
-    updatedAt: { type: DataTypes.DATE, allowNull: false },
+    date_marked_in_progress: { type: DataTypes.DATE },
+    date_marked_resolved: { type: DataTypes.DATE },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
+    },
   },
   {
     tableName: 'issues',
   }
 );
 
-Issue.sync()
-  .then(() => console.log('Issues table synchronized'))
-  .catch((error) => console.log('Something went wrong', error));
+const Coordinates = db.define(
+  'Coordinates',
+  {
+    id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true },
+    lat: { type: DataTypes.FLOAT, allowNull: false },
+    lng: { type: DataTypes.FLOAT, allowNull: false },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
+    },
+  },
+  { tableName: 'coordinates' }
+);
+
+Issue.belongsTo(User, { foreignKey: 'user_id' });
+User.hasMany(Issue, { foreignKey: 'user_id' });
+Issue.belongsTo(Type, { foreignKey: 'type_id' });
+Type.hasMany(Issue, { foreignKey: 'type_id' });
+Issue.belongsTo(Borough, { foreignKey: 'borough_id' });
+Borough.hasMany(Issue, { foreignKey: 'borough_id' });
+Issue.belongsTo(Resolution_Status, { foreignKey: 'resolution_status_id' });
+Resolution_Status.hasMany(Issue, { foreignKey: 'resolution_status_id' });
+Issue.hasOne(Coordinates, { foreignKey: 'id' });
+
+(async () => {
+  await User.sync({ alter: true });
+  await Type.sync({ alter: true });
+  await Borough.sync({ alter: true });
+  await Resolution_Status.sync({ alter: true });
+  await Issue.sync({ alter: true });
+  await Coordinates.sync({ alter: true });
+  console.log('Tables syncronized');
+})();
 
 module.exports.User = User;
 module.exports.Issue = Issue;
+module.exports.Type = Type;
+module.exports.Coordinates = Coordinates;
+module.exports.Borough = Borough;
+module.exports.Resolution_Status = Resolution_Status;
