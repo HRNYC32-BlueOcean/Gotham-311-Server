@@ -8,6 +8,10 @@ const { Sequelize } = require('sequelize');
 //   dialect: 'postgres',
 //   define: {
 //     freezeTableName: true,
+<<<<<<< HEAD
+=======
+//     timestamps: false,
+>>>>>>> 31fd1ea23adcc011319bc6381b227fe76e6b3052
 //   },
 // });
 
