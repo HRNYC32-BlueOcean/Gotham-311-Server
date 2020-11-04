@@ -2,7 +2,7 @@ const { Op } = require('sequelize');
 const {
   User,
   Issue,
-  Type,
+  Issue_Type,
   Coordinates,
   Borough,
   Resolution_Status,
@@ -52,6 +52,21 @@ module.exports.resolvers = {
     issuesByBorough: (parent, args, context) => {
       return args;
     },
+    getSortedIssues: (parent, args, context) => {
+      if (args.borough_id) {
+        return Issue.findAll({
+          where: { borough_id: args.borough_id },
+          order: [[args.by, args.order]],
+          offset: args.offset || 0,
+          limit: args.limit || 20,
+        });
+      }
+      return Issue.findAll({
+        order: [[args.by, args.order]],
+        offset: args.offset || 0,
+        limit: args.limit || 20,
+      });
+    },
   },
 
   User: {
@@ -62,7 +77,7 @@ module.exports.resolvers = {
 
   Issue: {
     type: (root) => {
-      return Type.findAll({ where: { id: root.type_id }, raw: true, plain: true });
+      return Issue_Type.findAll({ where: { id: root.type_id }, raw: true, plain: true });
     },
     user: (root) => {
       return User.findAll({ where: { id: root.user_id }, raw: true, plain: true });
@@ -198,21 +213,22 @@ module.exports.resolvers = {
       return User.destroy({ where: { id: args.id } });
     },
     createIssue: (parent, args, context) => {
-      return Issue.create(
-        {
-          title: args.title,
-          description: args.description,
-          user_id: args.user_id,
-          type_id: args.type_id,
-          borough_id: args.borough_id,
-          photo_url: args.photo_url,
-          resolution_status_id: 1,
-        },
-        { raw: true }
-      )
-        .then((result) =>
-          Coordinates.create({ id: result.dataValues.id, lat: args.lat, lng: args.lng })
-        )
+      Coordinates.create({ lat: args.lat, lng: args.lng })
+        .then((result) => {
+          return Issue.create(
+            {
+              title: args.title,
+              description: args.description,
+              user_id: args.user_id,
+              issue_type_id: args.issue_type_id,
+              borough_id: args.borough_id,
+              photo_url: args.photo_url,
+              coordinates_id: result.dataValues.id,
+              resolution_status_id: 1,
+            },
+            { returning: true, raw: true }
+          );
+        })
         .catch((error) => console.log(error));
     },
     updateIssue: (parent, args, context) => {

@@ -10,8 +10,7 @@ module.exports.typeDefs = gql`
     points: Float
     reported_count: Float
     banned: Boolean
-    createdAt: String
-    updatedAt: String
+    create_date: String
     issues: [Issue]
   }
 
@@ -23,19 +22,28 @@ module.exports.typeDefs = gql`
     type_id: Float
     borough_id: Float
     resolution_status_id: Float
+    coordinates_id: Float
     photo_url: String
     reported_count: Float
     upvotes_count: Float
     confirm_resolved_count: Float
+    confirm_not_resolved_count: Float
     date_marked_in_progress: String
     date_marked_resolved: String
-    createdAt: String
-    updatedAt: String
+    created_date: String
     type: Type
     user: User
     borough: Type
     coordinates: Coordinates
-    resolution_status: Resolution_Status
+    resolution_status: Type
+  }
+
+  type Interaction {
+    id: ID
+    create_date: String
+    user_id: Float
+    issue_id: Float
+    coordinates_id: Float
   }
 
   type Type {
@@ -47,11 +55,6 @@ module.exports.typeDefs = gql`
     id: ID
     lat: Float
     lng: Float
-  }
-
-  type Resolution_Status {
-    id: ID
-    status: String
   }
 
   type TopIssues {
@@ -100,50 +103,59 @@ module.exports.typeDefs = gql`
     getType(id: ID!): [Type]
     getCoordinates: [Coordinates]
     getCoordinate(id: ID!): [Coordinates]
-    getResolution_Statuses: [Resolution_Status]
-    getResolution_Status(id: ID!): [Resolution_Status]
+    getResolution_Statuses: [Type]
+    getResolution_Status(id: ID!): [Type]
     getBoroughs: [Type]
     getBorough(id: ID!): [Type]
     topIssues(count: Float): TopIssues
     issuesByBorough: IssuesCountByBorough
     issuesByMonth: IssuesCountByMonth
+    getSortedIssues(
+      borough_id: Float
+      by: String
+      order: String
+      offset: Float
+      limit: Float
+    ): [Issue]
   }
 
   type Mutation {
-    createUser(name: String!, email: String!, phone: String!): User
-    updateUser(id: ID!, name: String, email: String, phone: String): [Float]
+    createUser(first_name: String!, last_name: String!, email: String!, phone: String!): User
+    updateUser(
+      id: ID!
+      first_name: String
+      last_name: String
+      email: String
+      phone: String
+      points: Float
+      reported_count: Float
+      banned: Boolean
+    ): [Float]
+
     deleteUser(id: ID!): Float
 
     createIssue(
       title: String
       description: String
-      user_id: Float
-      type_id: Float
-      borough_id: Float
       photo_url: String
+      user_id: Float
+      issue_type_id: Float
+      borough_id: Float
       lat: Float
       lng: Float
-    ): Issue
+    ): [Issue]
 
     updateIssue(
       id: ID!
-      title: String
-      description: String
-      task_owner: String
-      user_id: Float
-      type_id: String
-      lat: Float
-      lng: Float
       reported_count: Float
       upvotes_count: Float
-      resolution_status: Float
+      resolution_status_id: Float
       confirm_resolved_count: Float
+      confirm_not_resolved_count: Float
       date_marked_in_progress: String
       date_marked_resolved: String
     ): [Float]
 
     deleteIssue(id: ID!): Float
-
-    updateCoordinates(id: ID!, lat: Float, lng: Float): [Coordinates]
   }
 `;
