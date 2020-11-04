@@ -30,7 +30,7 @@ const Type = db.define(
     id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
     name: { type: DataTypes.STRING, allowNull: false },
   },
-  { tableName: 'types' }
+  { tableName: 'types', timestamps: false }
 );
 
 const Borough = db.define(
@@ -82,7 +82,7 @@ const Coordinates = db.define(
     lat: { type: DataTypes.FLOAT, allowNull: false },
     lng: { type: DataTypes.FLOAT, allowNull: false },
   },
-  { tableName: 'coordinates' }
+  { tableName: 'coordinates', timestamps: false }
 );
 
 Issue.belongsTo(User, { foreignKey: 'user_id' });
