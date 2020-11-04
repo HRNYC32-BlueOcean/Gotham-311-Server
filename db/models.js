@@ -17,14 +17,10 @@ const User = db.define(
       allowNull: false,
       defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
     },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
-    },
   },
   {
     tableName: 'users',
+    timestamps: false,
   }
 );
 
@@ -33,16 +29,6 @@ const Type = db.define(
   {
     id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
     name: { type: DataTypes.STRING, allowNull: false },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
-    },
   },
   { tableName: 'types' }
 );
@@ -52,18 +38,8 @@ const Borough = db.define(
   {
     id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
     name: { type: DataTypes.STRING, allowNull: false },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
-    },
   },
-  { tableName: 'borough' }
+  { tableName: 'borough', timestamps: false }
 );
 
 const Resolution_Status = db.define(
@@ -71,18 +47,8 @@ const Resolution_Status = db.define(
   {
     id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
     status: { type: DataTypes.STRING, allowNull: false },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
-    },
   },
-  { tableName: 'resolution_status' }
+  { tableName: 'resolution_status', timestamps: false }
 );
 
 const Issue = db.define(
@@ -91,24 +57,21 @@ const Issue = db.define(
     id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
     title: { type: DataTypes.STRING, allowNull: false },
     description: { type: DataTypes.STRING, allowNull: false },
+    photo_url: { type: DataTypes.STRING, allowNull: false, defaultValue: '' },
+    create_date: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
+    },
     reported_count: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
     upvotes_count: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
-    confirm_resolved_count: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
     date_marked_in_progress: { type: DataTypes.DATE },
     date_marked_resolved: { type: DataTypes.DATE },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
-    },
+    confirm_resolved_count: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
   },
   {
     tableName: 'issues',
+    timestamps: false,
   }
 );
 
@@ -118,16 +81,6 @@ const Coordinates = db.define(
     id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true },
     lat: { type: DataTypes.FLOAT, allowNull: false },
     lng: { type: DataTypes.FLOAT, allowNull: false },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: db.literal('CURRENT_TIMESTAMP(3)'),
-    },
   },
   { tableName: 'coordinates' }
 );

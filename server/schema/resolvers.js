@@ -138,21 +138,21 @@ module.exports.resolvers = {
 
   Count: {
     open: (root) => {
-      let [[key, value]] = Object.entries(root);
+      const [[key, value]] = Object.entries(root);
       return Issue.count({
         where: { resolution_status_id: 1, [key]: value },
         raw: true,
       });
     },
     in_progress: (root) => {
-      let [[key, value]] = Object.entries(root);
+      const [[key, value]] = Object.entries(root);
       return Issue.count({
         where: { resolution_status_id: 2, [key]: value },
         raw: true,
       });
     },
     resolved: (root) => {
-      let [[key, value]] = Object.entries(root);
+      const [[key, value]] = Object.entries(root);
       return Issue.count({
         where: { resolution_status_id: 3, [key]: value },
         raw: true,
@@ -160,7 +160,7 @@ module.exports.resolvers = {
     },
   },
 
-  IssuesCountbyBorough: {
+  IssuesCountByBorough: {
     manhattan: () => {
       return { borough_id: 1 };
     },
@@ -178,6 +178,12 @@ module.exports.resolvers = {
     },
   },
 
+  IssuesCountByMonth: {
+    January: () => {
+      return {};
+    },
+  },
+
   Mutation: {
     createUser: (parent, args, context) => {
       return User.create(args);
@@ -192,7 +198,22 @@ module.exports.resolvers = {
       return User.destroy({ where: { id: args.id } });
     },
     createIssue: (parent, args, context) => {
-      return Issue.create(args);
+      return Issue.create(
+        {
+          title: args.title,
+          description: args.description,
+          user_id: args.user_id,
+          type_id: args.type_id,
+          borough_id: args.borough_id,
+          photo_url: args.photo_url,
+          resolution_status_id: 1,
+        },
+        { raw: true }
+      )
+        .then((result) =>
+          Coordinates.create({ id: result.dataValues.id, lat: args.lat, lng: args.lng })
+        )
+        .catch((error) => console.log(error));
     },
     updateIssue: (parent, args, context) => {
       return Issue.update(args, {
@@ -201,7 +222,9 @@ module.exports.resolvers = {
       });
     },
     deleteIssue: (parent, args, context) => {
-      return Issue.destroy({ where: { id: args.id } });
+      return Issue.destroy({ where: { id: args.id } })
+        .then((result) => Coordinates.destroy({ where: { id: result.dataValues.id } }))
+        .catch((error) => console.log(error));
     },
   },
 };
