@@ -23,6 +23,7 @@ module.exports.typeDefs = gql`
     type_id: Float
     borough_id: Float
     resolution_status_id: Float
+    photo_url: String
     reported_count: Float
     upvotes_count: Float
     confirm_resolved_count: Float
@@ -67,7 +68,7 @@ module.exports.typeDefs = gql`
     resolved: Float
   }
 
-  type IssuesCountbyBorough {
+  type IssuesCountByBorough {
     manhattan: Count
     brooklyn: Count
     queens: Count
@@ -75,7 +76,7 @@ module.exports.typeDefs = gql`
     staten_island: Count
   }
 
-  type IssuesCountbyMonth {
+  type IssuesCountByMonth {
     January: Count
     February: Count
     March: Count
@@ -104,8 +105,8 @@ module.exports.typeDefs = gql`
     getBoroughs: [Type]
     getBorough(id: ID!): [Type]
     topIssues(count: Float): TopIssues
-    issuesByBorough: IssuesCountbyBorough
-    issuesByMonth: IssuesCountbyMonth
+    issuesByBorough: IssuesCountByBorough
+    issuesByMonth: IssuesCountByMonth
   }
 
   type Mutation {
@@ -118,14 +119,10 @@ module.exports.typeDefs = gql`
       description: String
       user_id: Float
       type_id: Float
+      borough_id: Float
+      photo_url: String
       lat: Float
       lng: Float
-      reported_count: Float
-      upvotes_count: Float
-      resolution_status: Float
-      confirm_resolved_count: Float
-      date_marked_in_progress: String
-      date_marked_resolved: String
     ): Issue
 
     updateIssue(
