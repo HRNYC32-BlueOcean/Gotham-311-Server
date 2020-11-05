@@ -108,8 +108,7 @@ module.exports.typeDefs = gql`
     getBoroughs: [Type]
     getBorough(id: ID!): [Type]
     topIssues(count: Float): TopIssues
-    issuesByBorough: IssuesCountByBorough
-    issuesByMonth: IssuesCountByMonth
+    issuesByBorough(period: String): IssuesCountByBorough
     getSortedIssues(
       borough_id: Float
       by: String

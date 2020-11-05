@@ -153,63 +153,86 @@ module.exports.resolvers = {
 
   Count: {
     open: (root) => {
-      const [[field, value], []] = Object.entries(root);
+      if (root.period) {
+        const [[field, value], [_, date]] = Object.entries(root);
+        return Issue.count({
+          where: { resolution_status_id: 1, [field]: value, create_date: { [Op.gte]: date } },
+          raw: true,
+        });
+      }
+      const [[borough, id]] = Object.entries(root);
       return Issue.count({
-        where: { resolution_status_id: 1, [field]: value },
+        where: { resolution_status_id: 1, [borough]: id },
         raw: true,
       });
     },
     in_progress: (root) => {
-      const [[field, value]] = Object.entries(root);
+      if (root.period) {
+        const [[field, value], [_, date]] = Object.entries(root);
+        return Issue.count({
+          where: { resolution_status_id: 2, [field]: value, create_date: { [Op.gte]: date } },
+          raw: true,
+        });
+      }
+      const [[borough, id]] = Object.entries(root);
       return Issue.count({
-        where: { resolution_status_id: 2, [field]: value },
+        where: { resolution_status_id: 2, [borough]: id },
         raw: true,
       });
     },
     resolved: (root) => {
-      const [[field, value]] = Object.entries(root);
+      if (root.period) {
+        const [[field, value], [_, date]] = Object.entries(root);
+        return Issue.count({
+          where: { resolution_status_id: 3, [field]: value, create_date: { [Op.gte]: date } },
+          raw: true,
+        });
+      }
+      const [[borough, id]] = Object.entries(root);
       return Issue.count({
-        where: { resolution_status_id: 3, [field]: value },
+        where: { resolution_status_id: 3, [borough]: id },
         raw: true,
       });
     },
   },
 
   IssuesCountByBorough: {
-    manhattan: () => {
+    manhattan: (root) => {
+      if (root.period) {
+        const [[field, value]] = Object.entries(root);
+        return { borough_id: 1, [field]: value };
+      }
       return { borough_id: 1 };
     },
-    brooklyn: () => {
+    brooklyn: (root) => {
+      if (root.period) {
+        const [[field, value]] = Object.entries(root);
+        return { borough_id: 2, [field]: value };
+      }
       return { borough_id: 2 };
     },
-    queens: () => {
+    queens: (root) => {
+      if (root.period) {
+        const [[field, value]] = Object.entries(root);
+        return { borough_id: 3, [field]: value };
+      }
       return { borough_id: 3 };
     },
-    bronx: () => {
+    bronx: (root) => {
+      if (root.period) {
+        const [[field, value]] = Object.entries(root);
+        return { borough_id: 4, [field]: value };
+      }
       return { borough_id: 4 };
     },
-    staten_island: () => {
+    staten_island: (root) => {
+      if (root.period) {
+        const [[field, value]] = Object.entries(root);
+        return { borough_id: 5, [field]: value };
+      }
       return { borough_id: 5 };
     },
   },
-
-  // IssuesCountByPeriod: {
-  //   manhattan: () => {
-  //     return { borough_id: 1 };
-  //   },
-  //   brooklyn: () => {
-  //     return { borough_id: 2 };
-  //   },
-  //   queens: () => {
-  //     return { borough_id: 3 };
-  //   },
-  //   bronx: () => {
-  //     return { borough_id: 4 };
-  //   },
-  //   staten_island: () => {
-  //     return { borough_id: 5 };
-  //   },
-  // },
 
   Mutation: {
     createUser: (parent, args, context) => {
