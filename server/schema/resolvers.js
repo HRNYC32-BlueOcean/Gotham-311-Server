@@ -67,6 +67,26 @@ module.exports.resolvers = {
         limit: args.limit || 20,
       });
     },
+    getIssuesByCoordinates: (parent, args, context) => {
+      return Coordinates.findAll({
+        where: {
+          lat: { [Op.between]: [args.underLat, args.upperLat] },
+          lng: { [Op.between]: [args.underLng, args.upperLng] },
+        },
+        attributes: ['id'],
+        raw: true,
+      })
+        .then((result) => {
+          const ids = [];
+          console.log(ids);
+          result.forEach((entry) => ids.push(entry.id));
+          return Issue.findAll({
+            where: { coordinates_id: { [Op.in]: ids } },
+            raw: true,
+          });
+        })
+        .catch((error) => console.log(error));
+    },
   },
 
   User: {
@@ -248,7 +268,7 @@ module.exports.resolvers = {
       return User.destroy({ where: { id: args.id } });
     },
     createIssue: (parent, args, context) => {
-      Coordinates.create({ lat: args.lat, lng: args.lng })
+      return Coordinates.create({ lat: args.lat, lng: args.lng })
         .then((result) => {
           return Issue.create(
             {

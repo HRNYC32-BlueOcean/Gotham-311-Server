@@ -116,6 +116,12 @@ module.exports.typeDefs = gql`
       offset: Float
       limit: Float
     ): [Issue]
+    getIssuesByCoordinates(
+      upperLat: Float!
+      underLat: Float!
+      upperLng: Float!
+      underLng: Float!
+    ): [Issue]
   }
 
   type Mutation {
@@ -142,7 +148,7 @@ module.exports.typeDefs = gql`
       borough_id: Float
       lat: Float
       lng: Float
-    ): [Issue]
+    ): Issue
 
     updateIssue(
       id: ID!
