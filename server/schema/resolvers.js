@@ -77,7 +77,7 @@ module.exports.resolvers = {
 
   Issue: {
     type: (root) => {
-      return Issue_Type.findAll({ where: { id: root.type_id }, raw: true, plain: true });
+      return Issue_Type.findAll({ where: { id: root.issue_type_id }, raw: true, plain: true });
     },
     user: (root) => {
       return User.findAll({ where: { id: root.user_id }, raw: true, plain: true });
@@ -153,23 +153,23 @@ module.exports.resolvers = {
 
   Count: {
     open: (root) => {
-      const [[key, value]] = Object.entries(root);
+      const [[field, value], []] = Object.entries(root);
       return Issue.count({
-        where: { resolution_status_id: 1, [key]: value },
+        where: { resolution_status_id: 1, [field]: value },
         raw: true,
       });
     },
     in_progress: (root) => {
-      const [[key, value]] = Object.entries(root);
+      const [[field, value]] = Object.entries(root);
       return Issue.count({
-        where: { resolution_status_id: 2, [key]: value },
+        where: { resolution_status_id: 2, [field]: value },
         raw: true,
       });
     },
     resolved: (root) => {
-      const [[key, value]] = Object.entries(root);
+      const [[field, value]] = Object.entries(root);
       return Issue.count({
-        where: { resolution_status_id: 3, [key]: value },
+        where: { resolution_status_id: 3, [field]: value },
         raw: true,
       });
     },
@@ -193,11 +193,23 @@ module.exports.resolvers = {
     },
   },
 
-  IssuesCountByMonth: {
-    January: () => {
-      return {};
-    },
-  },
+  // IssuesCountByPeriod: {
+  //   manhattan: () => {
+  //     return { borough_id: 1 };
+  //   },
+  //   brooklyn: () => {
+  //     return { borough_id: 2 };
+  //   },
+  //   queens: () => {
+  //     return { borough_id: 3 };
+  //   },
+  //   bronx: () => {
+  //     return { borough_id: 4 };
+  //   },
+  //   staten_island: () => {
+  //     return { borough_id: 5 };
+  //   },
+  // },
 
   Mutation: {
     createUser: (parent, args, context) => {

@@ -19,7 +19,7 @@ module.exports.typeDefs = gql`
     title: String
     description: String
     user_id: Float
-    type_id: Float
+    issue_type_id: Float
     borough_id: Float
     resolution_status_id: Float
     coordinates_id: Float
@@ -30,7 +30,7 @@ module.exports.typeDefs = gql`
     confirm_not_resolved_count: Float
     date_marked_in_progress: String
     date_marked_resolved: String
-    created_date: String
+    create_date: String
     type: Type
     user: User
     borough: Type
