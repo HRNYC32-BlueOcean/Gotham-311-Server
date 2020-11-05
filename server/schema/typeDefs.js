@@ -79,19 +79,14 @@ module.exports.typeDefs = gql`
     staten_island: Count
   }
 
-  type IssuesCountByMonth {
-    January: Count
-    February: Count
-    March: Count
-    April: Count
-    May: Count
-    June: Count
-    July: Count
-    August: Count
-    September: Count
-    October: Count
-    November: Count
-    December: Count
+  type IssuesCountByPeriod {
+    oneDayAgo: Count
+    twoDaysAgo: Count
+    threeDaysAgo: Count
+    fourDaysAgo: Count
+    fiveDaysAgo: Count
+    sixDaysAgo: Count
+    sevenDaysAgo: Count
   }
 
   type Query {
@@ -109,6 +104,16 @@ module.exports.typeDefs = gql`
     getBorough(id: ID!): [Type]
     topIssues(count: Float): TopIssues
     issuesByBorough(period: String): IssuesCountByBorough
+    getIssuesByPeriod(
+      one: String
+      two: String
+      three: String
+      four: String
+      five: String
+      six: String
+      seven: String
+    ): IssuesCountByPeriod
+
     getSortedIssues(
       borough_id: Float
       by: String
@@ -116,6 +121,9 @@ module.exports.typeDefs = gql`
       offset: Float
       limit: Float
     ): [Issue]
+
+    getSortedUsers(by: String, order: String, offset: Float, limit: Float): [User]
+
     getIssuesByCoordinates(
       upperLat: Float!
       underLat: Float!
