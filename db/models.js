@@ -46,7 +46,7 @@ const Resolution_Status = db.define(
   'Resolution_Status',
   {
     id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
-    status: { type: DataTypes.STRING, allowNull: false },
+    name: { type: DataTypes.STRING, allowNull: false },
   },
   { tableName: 'resolution_status', timestamps: false }
 );
