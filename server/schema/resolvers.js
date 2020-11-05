@@ -83,7 +83,7 @@ module.exports.resolvers = {
       return User.findAll({ where: { id: root.user_id }, raw: true, plain: true });
     },
     coordinates: (root) => {
-      return Coordinates.findAll({ where: { id: root.id }, raw: true, plain: true });
+      return Coordinates.findAll({ where: { id: root.coordinates_id }, raw: true, plain: true });
     },
     borough: (root) => {
       return Borough.findAll({ where: { id: root.borough_id }, raw: true, plain: true });
