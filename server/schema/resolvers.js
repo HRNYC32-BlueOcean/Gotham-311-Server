@@ -6,6 +6,7 @@ const {
   Coordinates,
   Borough,
   Resolution_Status,
+  Interaction,
 } = require('../../db/models.js');
 
 const countFunction = (root, id) => {
@@ -323,6 +324,21 @@ module.exports.resolvers = {
     deleteIssue: (root, args, context) => {
       return Issue.destroy({ where: { id: args.id } })
         .then((result) => Coordinates.destroy({ where: { id: result.dataValues.id } }))
+        .catch((error) => console.log(error));
+    },
+    postInteraction: (root, args, context) => {
+      return Coordinates.create({ lat: args.lat, lng: args.lng })
+        .then((result) => {
+          return Interaction.create(
+            {
+              user_id: args.user_id,
+              issue_id: args.issue_id,
+              interaction_type_id: args.interaction_type_id,
+              coordinates_id: result.dataValues.id,
+            },
+            { returning: true, raw: true }
+          );
+        })
         .catch((error) => console.log(error));
     },
   },

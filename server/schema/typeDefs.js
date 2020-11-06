@@ -43,6 +43,7 @@ module.exports.typeDefs = gql`
     create_date: String
     user_id: Float
     issue_id: Float
+    interaction_type_id: Float
     coordinates_id: Float
   }
 
@@ -170,5 +171,13 @@ module.exports.typeDefs = gql`
     ): [Float]
 
     deleteIssue(id: ID!): Float
+
+    postInteraction(
+      user_id: Float!
+      issue_id: Float!
+      interaction_type_id: Float!
+      lat: Float!
+      lng: Float!
+    ): Interaction
   }
 `;
