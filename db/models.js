@@ -21,6 +21,7 @@ const User = db.define(
   {
     tableName: 'users',
     timestamps: false,
+    indexes: [{ unique: true, fields: ['email'] }],
   }
 );
 
