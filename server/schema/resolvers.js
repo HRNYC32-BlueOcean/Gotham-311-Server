@@ -37,7 +37,7 @@ const issueCount = (root, id) => {
   });
 };
 
-const issuesOrder = (root, id) => {
+const issueOrder = (root, id) => {
   return Issue.findAll({
     where: {
       borough_id: id,
@@ -50,7 +50,6 @@ const issuesOrder = (root, id) => {
 };
 
 const interactionCount = (root, id) => {
-  console.log('interactionCount', root);
   let [[_, date]] = Object.entries(root);
   date = new Date(date);
   const day = 60 * 60 * 24 * 1000;
@@ -190,19 +189,19 @@ module.exports.resolvers = {
 
   TopIssues: {
     manhattan: (root) => {
-      return issuesOrder(root, 1);
+      return issueOrder(root, 1);
     },
     brooklyn: (root) => {
-      return issuesOrder(root, 2);
+      return issueOrder(root, 2);
     },
     queens: (root) => {
-      return issuesOrder(root, 3);
+      return issueOrder(root, 3);
     },
     bronx: (root) => {
-      return issuesOrder(root, 4);
+      return issueOrder(root, 4);
     },
     staten_island: (root) => {
-      return issuesOrder(root, 5);
+      return issueOrder(root, 5);
     },
   },
 
