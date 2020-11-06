@@ -8,6 +8,34 @@ const {
   Resolution_Status,
 } = require('../../db/models.js');
 
+const countFunction = (root, id) => {
+  if (root.period && root.borough_id) {
+    const [[field, value], [_, date]] = Object.entries(root);
+    return Issue.count({
+      where: { resolution_status_id: id, [field]: value, create_date: { [Op.gte]: date } },
+      raw: true,
+    });
+  }
+  if (root.period) {
+    let [[_, date]] = Object.entries(root);
+    date = new Date(date);
+    const day = 60 * 60 * 24 * 1000;
+    const nextDate = new Date(date.getTime() + day);
+    return Issue.count({
+      where: {
+        resolution_status_id: id,
+        create_date: { [Op.between]: [date, nextDate] },
+      },
+      raw: true,
+    });
+  }
+  const [[field, value]] = Object.entries(root);
+  return Issue.count({
+    where: { resolution_status_id: id, [field]: value },
+    raw: true,
+  });
+};
+
 module.exports.resolvers = {
   Query: {
     getUsers: (root, args, context) => {
@@ -182,67 +210,13 @@ module.exports.resolvers = {
 
   Count: {
     open: (root) => {
-      if (root.period && root.borough_id) {
-        const [[field, value], [_, date]] = Object.entries(root);
-        return Issue.count({
-          where: { resolution_status_id: 1, [field]: value, create_date: { [Op.gte]: date } },
-          raw: true,
-        });
-      }
-      if (root.period) {
-        const [[_, date]] = Object.entries(root);
-        return Issue.count({
-          where: { resolution_status_id: 1, create_date: { [Op.gte]: date } },
-          raw: true,
-        });
-      }
-      const [[field, value]] = Object.entries(root);
-      return Issue.count({
-        where: { resolution_status_id: 1, [field]: value },
-        raw: true,
-      });
+      return countFunction(root, 1);
     },
     in_progress: (root) => {
-      if (root.period && root.borough_id) {
-        const [[field, value], [_, date]] = Object.entries(root);
-        return Issue.count({
-          where: { resolution_status_id: 2, [field]: value, create_date: { [Op.gte]: date } },
-          raw: true,
-        });
-      }
-      if (root.period) {
-        const [[_, date]] = Object.entries(root);
-        return Issue.count({
-          where: { resolution_status_id: 2, create_date: { [Op.gte]: date } },
-          raw: true,
-        });
-      }
-      const [[field, value]] = Object.entries(root);
-      return Issue.count({
-        where: { resolution_status_id: 2, [field]: value },
-        raw: true,
-      });
+      return countFunction(root, 2);
     },
     resolved: (root) => {
-      if (root.period && root.borough_id) {
-        const [[field, value], [_, date]] = Object.entries(root);
-        return Issue.count({
-          where: { resolution_status_id: 3, [field]: value, create_date: { [Op.gte]: date } },
-          raw: true,
-        });
-      }
-      if (root.period) {
-        const [[_, date]] = Object.entries(root);
-        return Issue.count({
-          where: { resolution_status_id: 3, create_date: { [Op.gte]: date } },
-          raw: true,
-        });
-      }
-      const [[field, value]] = Object.entries(root);
-      return Issue.count({
-        where: { resolution_status_id: 3, [field]: value },
-        raw: true,
-      });
+      return countFunction(root, 3);
     },
   },
 
