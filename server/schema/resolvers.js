@@ -50,13 +50,13 @@ const issuesOrder = (root, id) => {
 };
 
 const interactionCount = (root, id) => {
+  console.log('interactionCount', root);
   let [[_, date]] = Object.entries(root);
   date = new Date(date);
   const day = 60 * 60 * 24 * 1000;
   const nextDate = new Date(date.getTime() + day);
   return Interaction.count({
-    where: { interaction_type_id: id },
-    create_date: { [Op.between]: [date, nextDate] },
+    where: { interaction_type_id: id, create_date: { [Op.between]: [date, nextDate] } },
     raw: true,
   });
 };
