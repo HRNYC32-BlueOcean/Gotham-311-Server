@@ -43,6 +43,7 @@ module.exports.typeDefs = gql`
     create_date: String
     user_id: Float
     issue_id: Float
+    interaction_type_id: Float
     coordinates_id: Float
   }
 
@@ -79,24 +80,36 @@ module.exports.typeDefs = gql`
     staten_island: Count
   }
 
-  type IssuesCountByMonth {
-    January: Count
-    February: Count
-    March: Count
-    April: Count
-    May: Count
-    June: Count
-    July: Count
-    August: Count
-    September: Count
-    October: Count
-    November: Count
-    December: Count
+  type IssuesCountByPeriod {
+    oneDayAgo: Count
+    twoDaysAgo: Count
+    threeDaysAgo: Count
+    fourDaysAgo: Count
+    fiveDaysAgo: Count
+    sixDaysAgo: Count
+    sevenDaysAgo: Count
+  }
+
+  type InteractionCount {
+    IssuePosts: Float
+    IssueReports: Float
+    IssueUpvotes: Float
+    IssueResolved: Float
+  }
+
+  type InteractionCountByPeriod {
+    oneDayAgo: InteractionCount
+    twoDaysAgo: InteractionCount
+    threeDaysAgo: InteractionCount
+    fourDaysAgo: InteractionCount
+    fiveDaysAgo: InteractionCount
+    sixDaysAgo: InteractionCount
+    sevenDaysAgo: InteractionCount
   }
 
   type Query {
     getUsers: [User]
-    getUser(id: ID!): [User]
+    getUser(id: ID, email: String): [User]
     getIssues: [Issue]
     getIssue(id: ID!): [Issue]
     getTypes: [Type]
@@ -107,14 +120,45 @@ module.exports.typeDefs = gql`
     getResolution_Status(id: ID!): [Type]
     getBoroughs: [Type]
     getBorough(id: ID!): [Type]
+    getInteraction(user_id: Float!): [Interaction]
+    getInteractions: [Interaction]
     topIssues(count: Float): TopIssues
     issuesByBorough(period: String): IssuesCountByBorough
+    getInteractionsByPeriod(
+      one: String
+      two: String
+      three: String
+      four: String
+      five: String
+      six: String
+      seven: String
+    ): InteractionCountByPeriod
+
+    getIssuesByPeriod(
+      one: String
+      two: String
+      three: String
+      four: String
+      five: String
+      six: String
+      seven: String
+    ): IssuesCountByPeriod
+
     getSortedIssues(
       borough_id: Float
       by: String
       order: String
       offset: Float
       limit: Float
+    ): [Issue]
+
+    getSortedUsers(by: String, order: String, offset: Float, limit: Float): [User]
+
+    getIssuesByCoordinates(
+      upperLat: Float!
+      underLat: Float!
+      upperLng: Float!
+      underLng: Float!
     ): [Issue]
   }
 
@@ -142,7 +186,7 @@ module.exports.typeDefs = gql`
       borough_id: Float
       lat: Float
       lng: Float
-    ): [Issue]
+    ): Issue
 
     updateIssue(
       id: ID!
@@ -156,5 +200,13 @@ module.exports.typeDefs = gql`
     ): [Float]
 
     deleteIssue(id: ID!): Float
+
+    postInteraction(
+      user_id: Float!
+      issue_id: Float!
+      interaction_type_id: Float!
+      lat: Float!
+      lng: Float!
+    ): Interaction
   }
 `;

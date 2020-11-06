@@ -6,53 +6,105 @@ const {
   Coordinates,
   Borough,
   Resolution_Status,
+  Interaction,
 } = require('../../db/models.js');
+
+const issueCount = (root, id) => {
+  if (root.period && root.borough_id) {
+    const [[field, value], [_, date]] = Object.entries(root);
+    return Issue.count({
+      where: { resolution_status_id: id, [field]: value, create_date: { [Op.gte]: date } },
+      raw: true,
+    });
+  }
+  if (root.period) {
+    let [[_, date]] = Object.entries(root);
+    date = new Date(date);
+    const day = 60 * 60 * 24 * 1000;
+    const nextDate = new Date(date.getTime() + day);
+    return Issue.count({
+      where: {
+        resolution_status_id: id,
+        create_date: { [Op.between]: [date, nextDate] },
+      },
+      raw: true,
+    });
+  }
+  const [[field, value]] = Object.entries(root);
+  return Issue.count({
+    where: { resolution_status_id: id, [field]: value },
+    raw: true,
+  });
+};
+
+const issueOrder = (root, id) => {
+  return Issue.findAll({
+    where: {
+      borough_id: id,
+      [Op.or]: [{ resolution_status_id: 1 }, { resolution_status_id: 2 }],
+    },
+    order: [['upvotes_count', 'DESC']],
+    limit: root.count,
+    raw: true,
+  });
+};
+
+const interactionCount = (root, id) => {
+  let [[_, date]] = Object.entries(root);
+  date = new Date(date);
+  const day = 60 * 60 * 24 * 1000;
+  const nextDate = new Date(date.getTime() + day);
+  return Interaction.count({
+    where: { interaction_type_id: id, create_date: { [Op.between]: [date, nextDate] } },
+    raw: true,
+  });
+};
 
 module.exports.resolvers = {
   Query: {
-    getUsers: (parent, args, context) => {
+    getUsers: (root, args, context) => {
       return User.findAll({ raw: true });
     },
-    getUser: (parent, args, context) => {
+    getUser: (root, args, context) => {
       return User.findAll({ where: args, raw: true });
     },
     getIssues: () => {
       return Issue.findAll({ raw: true });
     },
-    getIssue: (parent, args, context) => {
+    getIssue: (root, args, context) => {
       return Issue.findAll({ where: args, raw: true });
     },
-    getTypes: (parent, args, context) => {
+    getTypes: (root, args, context) => {
       return Type.findAll({ raw: true });
     },
-    getType: (parent, args, context) => {
+    getType: (root, args, context) => {
       return Type.findAll({ where: args, raw: true });
     },
-    getCoordinates: (parent, args, context) => {
+    getCoordinates: (root, args, context) => {
       return Coordinates.findAll({ raw: true });
     },
-    getCoordinate: (parent, args, context) => {
+    getCoordinate: (root, args, context) => {
       return Coordinates.findAll({ where: args, raw: true });
     },
-    getResolution_Statuses: (parent, args, context) => {
+    getResolution_Statuses: (root, args, context) => {
       return Resolution_Status.findAll({ raw: true });
     },
-    getResolution_Status: (parent, args, context) => {
+    getResolution_Status: (root, args, context) => {
       return Resolution_Status.findAll({ where: args, raw: true });
     },
-    getBoroughs: (parent, args, context) => {
+    getBoroughs: (root, args, context) => {
       return Borough.findAll({ raw: true });
     },
-    getBorough: (parent, args, context) => {
+    getBorough: (root, args, context) => {
       return Borough.findAll({ where: args, raw: true });
     },
-    topIssues: (parent, args, context) => {
+    topIssues: (root, args, context) => {
       return args;
     },
-    issuesByBorough: (parent, args, context) => {
+    issuesByBorough: (root, args, context) => {
       return args;
     },
-    getSortedIssues: (parent, args, context) => {
+    getSortedIssues: (root, args, context) => {
       if (args.borough_id) {
         return Issue.findAll({
           where: { borough_id: args.borough_id },
@@ -66,6 +118,44 @@ module.exports.resolvers = {
         offset: args.offset || 0,
         limit: args.limit || 20,
       });
+    },
+    getSortedUsers: (root, args, context) => {
+      return User.findAll({
+        order: [[args.by, args.order]],
+        offset: args.offset || 0,
+        limit: args.limit || 20,
+      });
+    },
+    getIssuesByCoordinates: (root, args, context) => {
+      return Coordinates.findAll({
+        where: {
+          lat: { [Op.between]: [args.underLat, args.upperLat] },
+          lng: { [Op.between]: [args.underLng, args.upperLng] },
+        },
+        attributes: ['id'],
+        raw: true,
+      })
+        .then((result) => {
+          const ids = [];
+          result.forEach((entry) => ids.push(entry.id));
+          return Issue.findAll({
+            where: { coordinates_id: { [Op.in]: ids } },
+            raw: true,
+          });
+        })
+        .catch((error) => console.log(error));
+    },
+    getIssuesByPeriod: (root, args, context) => {
+      return args;
+    },
+    getInteraction: (root, args, context) => {
+      return Interaction.findAll({ where: args, raw: true });
+    },
+    getInteractions: (root, args, context) => {
+      return Interaction.findAll({ raw: true });
+    },
+    getInteractionsByPeriod: (root, args, context) => {
+      return args;
     },
   },
 
@@ -99,100 +189,46 @@ module.exports.resolvers = {
 
   TopIssues: {
     manhattan: (root) => {
-      return Issue.findAll({
-        where: {
-          borough_id: 1,
-          [Op.or]: [{ resolution_status_id: 1 }, { resolution_status_id: 2 }],
-        },
-        order: [['upvotes_count', 'DESC']],
-        limit: root.count,
-        raw: true,
-      });
+      return issueOrder(root, 1);
     },
     brooklyn: (root) => {
-      return Issue.findAll({
-        where: {
-          borough_id: 2,
-          [Op.or]: [{ resolution_status_id: 1 }, { resolution_status_id: 2 }],
-        },
-        order: [['upvotes_count', 'DESC']],
-        limit: root.count,
-      });
+      return issueOrder(root, 2);
     },
     queens: (root) => {
-      return Issue.findAll({
-        where: {
-          borough_id: 3,
-          [Op.or]: [{ resolution_status_id: 1 }, { resolution_status_id: 2 }],
-        },
-        order: [['upvotes_count', 'DESC']],
-        limit: root.count,
-      });
+      return issueOrder(root, 3);
     },
     bronx: (root) => {
-      return Issue.findAll({
-        where: {
-          borough_id: 4,
-          [Op.or]: [{ resolution_status_id: 1 }, { resolution_status_id: 2 }],
-        },
-        order: [['upvotes_count', 'DESC']],
-        limit: root.count,
-      });
+      return issueOrder(root, 4);
     },
     staten_island: (root) => {
-      return Issue.findAll({
-        where: {
-          borough_id: 5,
-          [Op.or]: [{ resolution_status_id: 1 }, { resolution_status_id: 2 }],
-        },
-        order: [['upvotes_count', 'DESC']],
-        limit: root.count,
-      });
+      return issueOrder(root, 5);
     },
   },
 
   Count: {
     open: (root) => {
-      if (root.period) {
-        const [[field, value], [_, date]] = Object.entries(root);
-        return Issue.count({
-          where: { resolution_status_id: 1, [field]: value, create_date: { [Op.gte]: date } },
-          raw: true,
-        });
-      }
-      const [[borough, id]] = Object.entries(root);
-      return Issue.count({
-        where: { resolution_status_id: 1, [borough]: id },
-        raw: true,
-      });
+      return issueCount(root, 1);
     },
     in_progress: (root) => {
-      if (root.period) {
-        const [[field, value], [_, date]] = Object.entries(root);
-        return Issue.count({
-          where: { resolution_status_id: 2, [field]: value, create_date: { [Op.gte]: date } },
-          raw: true,
-        });
-      }
-      const [[borough, id]] = Object.entries(root);
-      return Issue.count({
-        where: { resolution_status_id: 2, [borough]: id },
-        raw: true,
-      });
+      return issueCount(root, 2);
     },
     resolved: (root) => {
-      if (root.period) {
-        const [[field, value], [_, date]] = Object.entries(root);
-        return Issue.count({
-          where: { resolution_status_id: 3, [field]: value, create_date: { [Op.gte]: date } },
-          raw: true,
-        });
-      }
-      const [[borough, id]] = Object.entries(root);
-      return Issue.count({
-        where: { resolution_status_id: 3, [borough]: id },
-        raw: true,
-      });
+      return issueCount(root, 3);
+    },
+  },
+
+  InteractionCount: {
+    IssuePosts: (root) => {
+      return interactionCount(root, 1);
+    },
+    IssueUpvotes: (root) => {
+      return interactionCount(root, 2);
+    },
+    IssueReports: (root) => {
+      return interactionCount(root, 3);
+    },
+    IssueResolved: (root) => {
+      return interactionCount(root, 4);
     },
   },
 
@@ -234,21 +270,69 @@ module.exports.resolvers = {
     },
   },
 
+  IssuesCountByPeriod: {
+    oneDayAgo: (root) => {
+      return { period: root.one };
+    },
+    twoDaysAgo: (root) => {
+      return { period: root.two };
+    },
+    threeDaysAgo: (root) => {
+      return { period: root.three };
+    },
+    fourDaysAgo: (root) => {
+      return { period: root.four };
+    },
+    fiveDaysAgo: (root) => {
+      return { period: root.five };
+    },
+    sixDaysAgo: (root) => {
+      return { period: root.six };
+    },
+    sevenDaysAgo: (root) => {
+      return { period: root.seven };
+    },
+  },
+
+  InteractionCountByPeriod: {
+    oneDayAgo: (root) => {
+      return { period: root.one };
+    },
+    twoDaysAgo: (root) => {
+      return { period: root.two };
+    },
+    threeDaysAgo: (root) => {
+      return { period: root.three };
+    },
+    fourDaysAgo: (root) => {
+      return { period: root.four };
+    },
+    fiveDaysAgo: (root) => {
+      return { period: root.five };
+    },
+    sixDaysAgo: (root) => {
+      return { period: root.six };
+    },
+    sevenDaysAgo: (root) => {
+      return { period: root.seven };
+    },
+  },
+
   Mutation: {
-    createUser: (parent, args, context) => {
+    createUser: (root, args, context) => {
       return User.create(args);
     },
-    updateUser: (parent, args, context) => {
+    updateUser: (root, args, context) => {
       return User.update(args, {
         where: { id: args.id },
         raw: true,
       });
     },
-    deleteUser: (parent, args, context) => {
+    deleteUser: (root, args, context) => {
       return User.destroy({ where: { id: args.id } });
     },
-    createIssue: (parent, args, context) => {
-      Coordinates.create({ lat: args.lat, lng: args.lng })
+    createIssue: (root, args, context) => {
+      return Coordinates.create({ lat: args.lat, lng: args.lng })
         .then((result) => {
           return Issue.create(
             {
@@ -266,15 +350,30 @@ module.exports.resolvers = {
         })
         .catch((error) => console.log(error));
     },
-    updateIssue: (parent, args, context) => {
+    updateIssue: (root, args, context) => {
       return Issue.update(args, {
         where: { id: args.id },
         raw: true,
       });
     },
-    deleteIssue: (parent, args, context) => {
+    deleteIssue: (root, args, context) => {
       return Issue.destroy({ where: { id: args.id } })
         .then((result) => Coordinates.destroy({ where: { id: result.dataValues.id } }))
+        .catch((error) => console.log(error));
+    },
+    postInteraction: (root, args, context) => {
+      return Coordinates.create({ lat: args.lat, lng: args.lng })
+        .then((result) => {
+          return Interaction.create(
+            {
+              user_id: args.user_id,
+              issue_id: args.issue_id,
+              interaction_type_id: args.interaction_type_id,
+              coordinates_id: result.dataValues.id,
+            },
+            { returning: true, raw: true }
+          );
+        })
         .catch((error) => console.log(error));
     },
   },
