@@ -125,6 +125,12 @@ module.exports.resolvers = {
     getIssuesByPeriod: (root, args, context) => {
       return args;
     },
+    getInteraction: (root, args, context) => {
+      return Interaction.findAll({ where: args, raw: true });
+    },
+    getInteractions: (root, args, context) => {
+      return Interaction.findAll({ raw: true });
+    },
   },
 
   User: {

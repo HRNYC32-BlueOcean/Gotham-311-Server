@@ -103,6 +103,8 @@ module.exports.typeDefs = gql`
     getResolution_Status(id: ID!): [Type]
     getBoroughs: [Type]
     getBorough(id: ID!): [Type]
+    getInteraction(user_id: Float!): [Interaction]
+    getInteractions: [Interaction]
     topIssues(count: Float): TopIssues
     issuesByBorough(period: String): IssuesCountByBorough
     getIssuesByPeriod(
