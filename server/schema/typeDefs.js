@@ -91,7 +91,7 @@ module.exports.typeDefs = gql`
 
   type Query {
     getUsers: [User]
-    getUser(id: ID!): [User]
+    getUser(id: ID, email: String): [User]
     getIssues: [Issue]
     getIssue(id: ID!): [Issue]
     getTypes: [Type]
