@@ -9,7 +9,7 @@ const {
   Interaction,
 } = require('../../db/models.js');
 
-const countFunction = (root, id) => {
+const issueCount = (root, id) => {
   if (root.period && root.borough_id) {
     const [[field, value], [_, date]] = Object.entries(root);
     return Issue.count({
@@ -45,6 +45,18 @@ const issuesOrder = (root, id) => {
     },
     order: [['upvotes_count', 'DESC']],
     limit: root.count,
+    raw: true,
+  });
+};
+
+const interactionCount = (root, id) => {
+  let [[_, date]] = Object.entries(root);
+  date = new Date(date);
+  const day = 60 * 60 * 24 * 1000;
+  const nextDate = new Date(date.getTime() + day);
+  return Interaction.count({
+    where: { interaction_type_id: id },
+    create_date: { [Op.between]: [date, nextDate] },
     raw: true,
   });
 };
@@ -143,6 +155,9 @@ module.exports.resolvers = {
     getInteractions: (root, args, context) => {
       return Interaction.findAll({ raw: true });
     },
+    getInteractionsByPeriod: (root, args, context) => {
+      return args;
+    },
   },
 
   User: {
@@ -193,13 +208,28 @@ module.exports.resolvers = {
 
   Count: {
     open: (root) => {
-      return countFunction(root, 1);
+      return issueCount(root, 1);
     },
     in_progress: (root) => {
-      return countFunction(root, 2);
+      return issueCount(root, 2);
     },
     resolved: (root) => {
-      return countFunction(root, 3);
+      return issueCount(root, 3);
+    },
+  },
+
+  InteractionCount: {
+    IssuePosts: (root) => {
+      return interactionCount(root, 1);
+    },
+    IssueUpvotes: (root) => {
+      return interactionCount(root, 2);
+    },
+    IssueReports: (root) => {
+      return interactionCount(root, 3);
+    },
+    IssueResolved: (root) => {
+      return interactionCount(root, 4);
     },
   },
 
@@ -242,6 +272,30 @@ module.exports.resolvers = {
   },
 
   IssuesCountByPeriod: {
+    oneDayAgo: (root) => {
+      return { period: root.one };
+    },
+    twoDaysAgo: (root) => {
+      return { period: root.two };
+    },
+    threeDaysAgo: (root) => {
+      return { period: root.three };
+    },
+    fourDaysAgo: (root) => {
+      return { period: root.four };
+    },
+    fiveDaysAgo: (root) => {
+      return { period: root.five };
+    },
+    sixDaysAgo: (root) => {
+      return { period: root.six };
+    },
+    sevenDaysAgo: (root) => {
+      return { period: root.seven };
+    },
+  },
+
+  InteractionCountByPeriod: {
     oneDayAgo: (root) => {
       return { period: root.one };
     },

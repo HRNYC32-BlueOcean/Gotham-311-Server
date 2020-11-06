@@ -90,6 +90,23 @@ module.exports.typeDefs = gql`
     sevenDaysAgo: Count
   }
 
+  type InteractionCount {
+    IssuePosts: Float
+    IssueReports: Float
+    IssueUpvotes: Float
+    IssueResolved: Float
+  }
+
+  type InteractionCountByPeriod {
+    oneDayAgo: InteractionCount
+    twoDaysAgo: InteractionCount
+    threeDaysAgo: InteractionCount
+    fourDaysAgo: InteractionCount
+    fiveDaysAgo: InteractionCount
+    sixDaysAgo: InteractionCount
+    sevenDaysAgo: InteractionCount
+  }
+
   type Query {
     getUsers: [User]
     getUser(id: ID, email: String): [User]
@@ -107,6 +124,16 @@ module.exports.typeDefs = gql`
     getInteractions: [Interaction]
     topIssues(count: Float): TopIssues
     issuesByBorough(period: String): IssuesCountByBorough
+    getInteractionsByPeriod(
+      one: String
+      two: String
+      three: String
+      four: String
+      five: String
+      six: String
+      seven: String
+    ): InteractionCountByPeriod
+
     getIssuesByPeriod(
       one: String
       two: String
