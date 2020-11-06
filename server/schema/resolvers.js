@@ -37,6 +37,18 @@ const countFunction = (root, id) => {
   });
 };
 
+const issuesOrder = (root, id) => {
+  return Issue.findAll({
+    where: {
+      borough_id: id,
+      [Op.or]: [{ resolution_status_id: 1 }, { resolution_status_id: 2 }],
+    },
+    order: [['upvotes_count', 'DESC']],
+    limit: root.count,
+    raw: true,
+  });
+};
+
 module.exports.resolvers = {
   Query: {
     getUsers: (root, args, context) => {
@@ -163,55 +175,19 @@ module.exports.resolvers = {
 
   TopIssues: {
     manhattan: (root) => {
-      return Issue.findAll({
-        where: {
-          borough_id: 1,
-          [Op.or]: [{ resolution_status_id: 1 }, { resolution_status_id: 2 }],
-        },
-        order: [['upvotes_count', 'DESC']],
-        limit: root.count,
-        raw: true,
-      });
+      return issuesOrder(root, 1);
     },
     brooklyn: (root) => {
-      return Issue.findAll({
-        where: {
-          borough_id: 2,
-          [Op.or]: [{ resolution_status_id: 1 }, { resolution_status_id: 2 }],
-        },
-        order: [['upvotes_count', 'DESC']],
-        limit: root.count,
-      });
+      return issuesOrder(root, 2);
     },
     queens: (root) => {
-      return Issue.findAll({
-        where: {
-          borough_id: 3,
-          [Op.or]: [{ resolution_status_id: 1 }, { resolution_status_id: 2 }],
-        },
-        order: [['upvotes_count', 'DESC']],
-        limit: root.count,
-      });
+      return issuesOrder(root, 3);
     },
     bronx: (root) => {
-      return Issue.findAll({
-        where: {
-          borough_id: 4,
-          [Op.or]: [{ resolution_status_id: 1 }, { resolution_status_id: 2 }],
-        },
-        order: [['upvotes_count', 'DESC']],
-        limit: root.count,
-      });
+      return issuesOrder(root, 4);
     },
     staten_island: (root) => {
-      return Issue.findAll({
-        where: {
-          borough_id: 5,
-          [Op.or]: [{ resolution_status_id: 1 }, { resolution_status_id: 2 }],
-        },
-        order: [['upvotes_count', 'DESC']],
-        limit: root.count,
-      });
+      return issuesOrder(root, 5);
     },
   },
 
